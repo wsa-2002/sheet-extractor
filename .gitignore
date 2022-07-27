@@ -4,4 +4,4 @@ __pycache__
 
 logging.yaml
 
-log/
+*.log
