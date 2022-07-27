@@ -18,3 +18,7 @@ aioboto3 # s3
 python-multipart # required for fastapi UploadFile
 
 line-bot-sdk # line
+pytube
+opencv-python
+pyter
+pytesseract
