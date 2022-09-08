@@ -5,3 +5,4 @@ __pycache__
 logging.yaml
 
 *.log
+/service/.ipynb_checkpoints/

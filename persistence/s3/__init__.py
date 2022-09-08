@@ -1,4 +1,4 @@
-import aioboto3
+import boto3
 import typing
 from uuid import UUID
 
@@ -8,31 +8,46 @@ from config import S3Config
 
 class S3Handler(metaclass=mcs.Singleton):
     def __init__(self):
-        self._session = aioboto3.Session()
+        self._session = boto3.Session()
         self._client = None
         self._resource = None
+        self._buckets = {}
 
-    async def initialize(self, s3_config: S3Config):
-        self._client = await self._session.client(
+    def initialize(self, s3_config: S3Config):
+        self._client = self._session.client(
             's3',
             endpoint_url=s3_config.endpoint,
             aws_access_key_id=s3_config.access_key,
             aws_secret_access_key=s3_config.secret_key,
-        ).__aenter__()
+        )
 
-        self._resource = await self._session.resource(
+        self._resource = self._session.resource(
             's3',
             endpoint_url=s3_config.endpoint,
             aws_access_key_id=s3_config.access_key,
             aws_secret_access_key=s3_config.secret_key,
-        ).__aenter__()
+        )
 
-    async def close(self):
-        await self._client.close()
-        await self._resource.close()
+    def close(self):
+        self._client.close()
+        self._resource.close()
 
-    async def sign_url(self, bucket: str, key: str, filename: str) -> str:
-        return await self._client.generate_presigned_url(
+    def get_bucket(self, bucket_name):
+        """
+        If the bucket requested is not yet created, will create the bucket.
+        """
+        try:
+            return self._buckets[bucket_name]
+        except KeyError:
+            bucket = self.create_bucket(bucket_name)
+            self._buckets[bucket_name] = bucket
+            return bucket
+
+    def create_bucket(self, bucket_name):
+        return self._resource.Bucket(bucket_name)
+
+    def sign_url(self, bucket: str, key: str, filename: str) -> str:
+        return self._client.generate_presigned_url(
             'get_object',
             Params={
                 'Bucket': bucket,
@@ -42,9 +57,9 @@ class S3Handler(metaclass=mcs.Singleton):
             ExpiresIn=3600,
         )
 
-    async def upload(self, file: typing.IO, key: UUID, bucket_name: str = 'temp'):
-        bucket = await self._resource.Bucket(bucket_name)
-        await bucket.upload_fileobj(file, str(key))
+    def upload(self, file: typing.IO, key: UUID, bucket_name: str = 'temp'):
+        bucket = self._resource.Bucket(bucket_name)
+        bucket.upload_fileobj(file, str(key))
 
 
 s3_handler = S3Handler()
