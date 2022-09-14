@@ -26,8 +26,6 @@ class SheetExtractor:
 
     def __enter__(self, file_extension: str = 'mp4', dir_name: str = 'temp_image') -> do.S3File:
         try:
-            self.filename = self.yt.streams.filter(progressive=True, file_extension=file_extension).order_by(
-                'resolution').desc().first().download()
             self.dir_name = dir_name
             os.mkdir(self.dir_name)
             self.extract(dir_name=self.dir_name, filename=self.filename, interval=self.interval)
