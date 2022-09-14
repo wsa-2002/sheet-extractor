@@ -36,9 +36,9 @@ app.add_middleware(
 
 @app.on_event('startup')
 async def app_startup():
-    # from config import db_config
-    # from persistence.database import pool_handler
-    # await pool_handler.initialize(db_config=db_config)
+    from config import db_config
+    from persistence.database import pool_handler
+    await pool_handler.initialize(db_config=db_config)
 
     # # if s3 needed
     from config import s3_config
@@ -48,8 +48,8 @@ async def app_startup():
 
 @app.on_event('shutdown')
 async def app_shutdown():
-    # from persistence.database import pool_handler
-    # await pool_handler.close()
+    from persistence.database import pool_handler
+    await pool_handler.close()
     #
     # if s3 needed
     from persistence.s3 import s3_handler

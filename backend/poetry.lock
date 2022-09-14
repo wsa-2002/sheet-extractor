@@ -1476,13 +1476,6 @@ description = "Python 3 library for downloading YouTube Videos."
 category = "main"
 optional = false
 python-versions = ">=3.6"
-develop = false
-
-[package.source]
-type = "git"
-url = "https://github.com/pytube/pytube"
-reference = "HEAD"
-resolved_reference = "2e307d8d615ef30aa837fe2275954146dab07ca6"
 
 [[package]]
 name = "pytz"
@@ -1878,7 +1871,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "8862f571142d0bcabc193cfecb198acf946c9e222c754ecaac14e5ec8e91f825"
+content-hash = "36893d320bd018d838e3781ab88e316bdd7183a43d24e35d642b3eb1b71f4c7e"
 
 [metadata.files]
 aio-pika = [
@@ -3091,7 +3084,10 @@ python-dotenv = [
 python-multipart = [
     {file = "python-multipart-0.0.5.tar.gz", hash = "sha256:f7bb5f611fc600d15fa47b3974c8aa16e93724513b49b5f95c81e6624c83fa43"},
 ]
-pytube = []
+pytube = [
+    {file = "pytube-12.1.0-py3-none-any.whl", hash = "sha256:c2e4b1ffdf9eca4c287f881557a6b4f98dd287ecfa06e2e5d5936d39c5f4d8da"},
+    {file = "pytube-12.1.0.tar.gz", hash = "sha256:6de1f3a4cb125dd6ff912598c7e88a866325a63cc91755cae616f53c40ae5503"},
+]
 pytz = [
     {file = "pytz-2022.2.1-py2.py3-none-any.whl", hash = "sha256:220f481bdafa09c3955dfbdddb7b57780e9a94f5127e35456a48589b9e0c0197"},
     {file = "pytz-2022.2.1.tar.gz", hash = "sha256:cea221417204f2d1a2aa03ddae3e867921971d0d76f14d87abb4414415bbdcf5"},

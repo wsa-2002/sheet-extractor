@@ -12,3 +12,10 @@ class S3File:
     key: str
     bucket: str
 
+
+@dataclass
+class Sheet:
+    id: int
+    url: str
+    s3_file_uuid: UUID
+
