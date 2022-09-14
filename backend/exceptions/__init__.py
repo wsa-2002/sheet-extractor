@@ -14,3 +14,9 @@ class IllegalInput(Exception):
     """
     Input is not legal
     """
+
+
+class LoginExpired(Exception):
+    """
+    Jwt token is expired
+    """

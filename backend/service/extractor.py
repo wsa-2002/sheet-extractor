@@ -32,8 +32,8 @@ class SheetExtractor:
             self.batch_crop_images(self.dir_name)
             filenames = sorted(list(filter(lambda x: True if 'crop' in x else False, os.listdir(self.dir_name))),
                                key=lambda x: int(re.findall(r'\d+', x)[0]))
-            preserved_images = [filenames[0]]
 
+            preserved_images = [filenames[0]]
             for i in range(len(filenames) - 1):
                 img_1 = cv2.imread(f"{self.dir_name}/{filenames[i]}")
                 img_2 = cv2.imread(f"{self.dir_name}/{filenames[i + 1]}")
