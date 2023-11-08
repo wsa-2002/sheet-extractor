@@ -1,31 +1,19 @@
 version: '3'
 
 services:
-  db:
-    image: postgres:13-alpine
+  pws_database:
+    image: postgres:16-alpine
     restart: always
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: pdogs
-    networks:
-      - internal
-
-  flyway:
-    image: flyway/flyway:latest-alpine
-    command: migrate
-    depends_on:
-      - db
-    environment:
-      FLYWAY_URL: jdbc:postgresql://db:5432/pdogs
-      FLYWAY_USER: dev
-      FLYWAY_PASSWORD: dev
     volumes:
-      - ./sql:/flyway/sql
+      - ./db_data:/var/lib/postgresql/data
+      - ./sql/:/docker-entrypoint-initdb.d
     networks:
       - internal
-
 networks:
   internal:

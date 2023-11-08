@@ -1,7 +1,7 @@
 import os
 import re
 import shutil
-from typing import List
+from typing import List, Tuple
 
 import cv2
 from pytube import YouTube
@@ -17,14 +17,15 @@ TEMP_PDF_FILENAME = 'temp.pdf'
 
 class SheetExtractor:
 
-    def __init__(self, url, interval: int = 1):
+    def __init__(self, url, interval: float = 1, identify_threshold: float = 0.07):
         self.yt = YouTube(url)
         self.filename = self.yt.streams.filter(progressive=True, file_extension='mp4').order_by(
             'resolution').desc().first().download()
 
         self.interval = interval
+        self.identify_threshold = identify_threshold
 
-    def __enter__(self, file_extension: str = 'mp4', dir_name: str = 'temp_image') -> do.S3File:
+    def __enter__(self, file_extension: str = 'mp4', dir_name: str = 'temp_image') -> Tuple[do.S3File, str]:
         try:
             self.dir_name = dir_name
             os.mkdir(self.dir_name)
@@ -37,23 +38,22 @@ class SheetExtractor:
             for i in range(len(filenames) - 1):
                 img_1 = cv2.imread(f"{self.dir_name}/{filenames[i]}")
                 img_2 = cv2.imread(f"{self.dir_name}/{filenames[i + 1]}")
-                if are_different_images(img_1, img_2):
+                if are_different_images(img_1, img_2, threshold=self.identify_threshold):
                     log.info('different image')
                     preserved_images.append(filenames[i+1])
-            print("preserved images", preserved_images)
             preserved_images = sorted(preserved_images, key=lambda x: int(re.findall(r'\d+', x)[0]))
-            print(preserved_images)
             upload_file = self.compose_and_upload_images(filenames=preserved_images, dir_name=self.dir_name)
         finally:
+            pass
             os.remove(self.filename)
             shutil.rmtree(self.dir_name)
-        return upload_file
+        return upload_file, self.filename
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         pass
 
     @classmethod
-    def extract(cls, dir_name: str, filename=None, interval: int = 1):
+    def extract(cls, dir_name: str, filename=None, interval: float = 1):
 
         file = cv2.VideoCapture(filename)
         fps = round(file.get(cv2.CAP_PROP_FPS))
@@ -71,7 +71,7 @@ class SheetExtractor:
 
             # fetch frame by pre-defined interval
             frame_count += 1
-            if frame_count % (fps * interval):
+            if frame_count % int(fps * interval):
                 continue
 
             # save selected image
@@ -89,6 +89,7 @@ class SheetExtractor:
     @staticmethod
     def crop_image(file_path: str, x_point: int = 0, y_point: int = 0, height: int = 350, width: int = 1280):
         image = cv2.imread(file_path)
+
         crop = image[y_point:y_point + height, x_point:x_point + width]
         dir_name, file_name = file_path.split('/')
         cv2.imwrite(f'{dir_name}/crop_{file_name}', crop)

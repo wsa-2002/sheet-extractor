@@ -1,7 +1,7 @@
 import cv2
 
 
-def are_different_images(img_1, img_2, threshold: float = 0.1) -> bool:
+def are_different_images(img_1, img_2, threshold: float = 0.07) -> bool:
     """
     return: True for images are different.
     """

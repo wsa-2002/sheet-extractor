@@ -55,12 +55,5 @@ async def app_shutdown():
     from persistence.s3 import s3_handler
     s3_handler.close()
 
-
-import middleware.auth
-app.middleware('http')(middleware.auth.middleware)
-
-import starlette_context.middleware
-app.add_middleware(starlette_context.middleware.RawContextMiddleware)
-
 import processor.http
 processor.http.register_routers(app)
